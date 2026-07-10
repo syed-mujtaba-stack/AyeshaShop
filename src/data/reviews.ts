@@ -1,0 +1,125 @@
+import { Review } from "@/types";
+
+export const reviews: Review[] = [
+  {
+    id: "rev-1",
+    productId: "1",
+    userId: "u1",
+    userName: "Ayesha Khan",
+    userAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+    rating: 5,
+    title: "Absolutely breathtaking!",
+    comment: "I wore this gown to a charity gala and received countless compliments. The crystals catch the light beautifully and the fit is perfection. Worth every penny!",
+    date: new Date("2026-01-15"),
+    verified: true,
+  },
+  {
+    id: "rev-2",
+    productId: "1",
+    userId: "u2",
+    userName: "Sarah Ahmed",
+    rating: 4,
+    title: "Stunning but runs large",
+    comment: "The dress is even more beautiful in person. I would recommend sizing down as it runs slightly large. The quality is exceptional.",
+    date: new Date("2026-01-10"),
+    verified: true,
+  },
+  {
+    id: "rev-3",
+    productId: "1",
+    userId: "u3",
+    userName: "Zoya Malik",
+    rating: 5,
+    title: "A work of art",
+    comment: "This is not just a dress, it's a piece of art. The hand embroidery is incredible. I've never felt more elegant.",
+    date: new Date("2025-12-28"),
+    verified: true,
+  },
+  {
+    id: "rev-4",
+    productId: "2",
+    userId: "u4",
+    userName: "Maya Patel",
+    rating: 5,
+    title: "Perfect for parties",
+    comment: "The sequins are amazing - they catch the light from every angle. I felt like a movie star!",
+    date: new Date("2026-01-20"),
+    verified: true,
+  },
+  {
+    id: "rev-5",
+    productId: "2",
+    userId: "u5",
+    userName: "Fatima Ali",
+    rating: 5,
+    title: "My new favorite dress",
+    comment: "The champagne color is gorgeous. Very comfortable to wear all night. Highly recommend!",
+    date: new Date("2026-01-05"),
+    verified: true,
+  },
+  {
+    id: "rev-6",
+    productId: "3",
+    userId: "u6",
+    userName: "Noor Hassan",
+    rating: 4,
+    title: "Beautiful craftsmanship",
+    comment: "The celestial embroidery is stunning. It's a conversation starter everywhere I go. Only giving 4 stars because it's quite heavy.",
+    date: new Date("2025-12-15"),
+    verified: true,
+  },
+  {
+    id: "rev-7",
+    productId: "4",
+    userId: "u7",
+    userName: "Laraib Shah",
+    rating: 5,
+    title: "Heirloom quality",
+    comment: "These pearls are exceptional quality. The luster is incredible and the diamond clasp is a beautiful touch. An investment piece.",
+    date: new Date("2026-01-25"),
+    verified: true,
+  },
+  {
+    id: "rev-8",
+    productId: "7",
+    userId: "u8",
+    userName: "Hira Butt",
+    rating: 5,
+    title: "Worth the investment",
+    comment: "This bag goes with everything and the leather quality is outstanding. I've been using it daily for months and it still looks brand new.",
+    date: new Date("2026-01-18"),
+    verified: true,
+  },
+  {
+    id: "rev-9",
+    productId: "8",
+    userId: "u9",
+    userName: "Sana Tariq",
+    rating: 5,
+    title: "My signature scent",
+    comment: "I've never received so many compliments on a perfume. The rose notes are sophisticated without being overwhelming. Lasts all day.",
+    date: new Date("2026-02-01"),
+    verified: true,
+  },
+  {
+    id: "rev-10",
+    productId: "10",
+    userId: "u10",
+    userName: "Mahnoor Sheikh",
+    rating: 4,
+    title: "Beautiful but need break-in",
+    comment: "These are absolutely gorgeous heels but they do need some breaking in. After wearing them a few times they're comfortable enough for a night out.",
+    date: new Date("2026-01-12"),
+    verified: true,
+  },
+];
+
+export const getReviewsByProductId = (productId: string): Review[] =>
+  reviews.filter((r) => r.productId === productId);
+
+export const getAverageRating = (productId: string): number => {
+  const productReviews = getReviewsByProductId(productId);
+  if (productReviews.length === 0) return 0;
+  const sum = productReviews.reduce((acc, r) => acc + r.rating, 0);
+  return Math.round((sum / productReviews.length) * 10) / 10;
+};
