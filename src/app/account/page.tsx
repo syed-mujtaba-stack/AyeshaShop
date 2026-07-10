@@ -1,7 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { currentCustomer } from "@/data/customers";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  useFirestoreOrders,
+  useFirestoreAddresses,
+  useFirestoreWishlist,
+  useFirestoreNotifications,
+} from "@/hooks/use-firestore-user";
+import { getUserProfile } from "@/lib/firestore";
+import type { FirestoreUserProfile } from "@/lib/firestore";
 import { formatPrice, formatDate, cn, getInitials } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +24,24 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const customer = currentCustomer;
-  const { orders, wishlist, addresses, notifications } = customer;
+  const { user } = useAuth();
+  const { orders, loading: ordersLoading } = useFirestoreOrders();
+  const { addresses, loading: addressesLoading } = useFirestoreAddresses();
+  const { productIds } = useFirestoreWishlist();
+  const { notifications, loading: notifsLoading } = useFirestoreNotifications();
+  const [profile, setProfile] = useState<FirestoreUserProfile | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    getUserProfile(user.uid).then((snap) => {
+      if (snap.exists()) setProfile(snap.data() as FirestoreUserProfile);
+    });
+  }, [user]);
+
+  const displayName = user?.displayName || profile ? `${profile?.firstName ?? ""} ${profile?.lastName ?? ""}`.trim() || "User" : "User";
+  const firstName = displayName.split(" ")[0];
+  const email = user?.email || profile?.email || "";
+  const avatar = user?.photoURL || profile?.avatar || "";
   const unreadNotifications = notifications.filter((n) => !n.read).length;
   const recentOrders = [...orders].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -32,7 +57,7 @@ export default function DashboardPage() {
     },
     {
       label: "Wishlist",
-      value: wishlist.length,
+      value: productIds.size,
       icon: Heart,
       color: "text-error bg-error/5",
       href: "/account/wishlist",
@@ -54,11 +79,13 @@ export default function DashboardPage() {
     },
   ];
 
+  const loading = ordersLoading || addressesLoading || notifsLoading;
+
   return (
     <div className="space-y-8">
       <div className="rounded-xl bg-gradient-to-br from-gold/5 via-white to-white border border-gold/10 p-6 sm:p-8">
         <h1 className="font-heading text-2xl sm:text-3xl font-bold text-dark">
-          Welcome back, {customer.firstName}
+          Welcome back, {firstName}
         </h1>
         <p className="text-medium-gray mt-1">
           Here&apos;s an overview of your account activity.
@@ -107,7 +134,19 @@ export default function DashboardPage() {
             </Link>
           </CardHeader>
           <CardContent className="pt-0">
-            {recentOrders.length === 0 ? (
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse flex items-center gap-3 p-3 rounded-xl">
+                    <div className="w-10 h-10 rounded-lg bg-lighter-gray" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 bg-lighter-gray rounded w-24" />
+                      <div className="h-2 bg-lighter-gray rounded w-32" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : recentOrders.length === 0 ? (
               <div className="text-center py-8">
                 <Package className="w-10 h-10 text-light-gray mx-auto mb-3" />
                 <p className="text-medium-gray text-sm">No orders yet</p>
@@ -173,21 +212,21 @@ export default function DashboardPage() {
           <CardContent className="pt-0 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-full bg-gold/10 flex items-center justify-center text-gold font-heading font-bold text-xl overflow-hidden">
-                {customer.avatar ? (
+                {avatar ? (
                   <img
-                    src={customer.avatar}
-                    alt={customer.firstName}
+                    src={avatar}
+                    alt={firstName}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  getInitials(`${customer.firstName} ${customer.lastName}`)
+                  getInitials(displayName)
                 )}
               </div>
               <div>
                 <p className="font-heading font-semibold text-dark">
-                  {customer.firstName} {customer.lastName}
+                  {displayName}
                 </p>
-                <p className="text-xs text-medium-gray">{customer.email}</p>
+                <p className="text-xs text-medium-gray">{email}</p>
               </div>
             </div>
 
@@ -198,7 +237,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-2 text-sm text-medium-gray">
                 <Heart className="w-4 h-4" />
-                <span>{wishlist.length} items in wishlist</span>
+                <span>{productIds.size} items in wishlist</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-medium-gray">
                 <MapPin className="w-4 h-4" />

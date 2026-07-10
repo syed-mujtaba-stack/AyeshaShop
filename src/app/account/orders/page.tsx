@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { orders } from "@/data/orders";
+import { useFirestoreOrders } from "@/hooks/use-firestore-user";
 import { formatPrice, formatDate, getStatusColor } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Package, ChevronRight } from "lucide-react";
@@ -14,6 +14,7 @@ import { ORDER_STATUSES } from "@/constants";
 const statusFilters: (OrderStatus | "all")[] = ["all", ...ORDER_STATUSES];
 
 export default function OrdersPage() {
+  const { orders, loading } = useFirestoreOrders();
   const [activeFilter, setActiveFilter] = useState<OrderStatus | "all">("all");
 
   const sortedOrders = [...orders].sort(
@@ -47,7 +48,21 @@ export default function OrdersPage() {
         ))}
       </div>
 
-      {filteredOrders.length === 0 ? (
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-lighter-gray" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 bg-lighter-gray rounded w-28" />
+                  <div className="h-2 bg-lighter-gray rounded w-40" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filteredOrders.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Package className="w-16 h-16 text-light-gray mb-4" />
@@ -56,7 +71,7 @@ export default function OrdersPage() {
             </h3>
             <p className="text-medium-gray text-sm mb-6">
               {activeFilter === "all"
-                ? "You haven't placed any orders yet"
+                ? "You haven&apos;t placed any orders yet"
                 : `No orders with status "${activeFilter}"`}
             </p>
             <Link href="/shop">

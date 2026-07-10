@@ -7,32 +7,31 @@ import { Mail, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SITE_NAME, SITE_TAGLINE } from "@/constants";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function ForgotPasswordPage() {
+  const { loading, error, resetPassword, clearError } = useAuth();
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const [fieldError, setFieldError] = useState("");
 
   const validate = () => {
-    if (!email) { setError("Email is required"); return false; }
-    if (!/\S+@\S+\.\S+/.test(email)) { setError("Please enter a valid email"); return false; }
+    if (!email) { setFieldError("Email is required"); return false; }
+    if (!/\S+@\S+\.\S+/.test(email)) { setFieldError("Please enter a valid email"); return false; }
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setFieldError("");
+    clearError();
     if (!validate()) return;
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    setIsLoading(false);
-    setIsSuccess(true);
+    const success = await resetPassword(email);
+    if (success) setIsSuccess(true);
   };
 
   return (
     <div className="min-h-screen flex bg-white">
-      {/* Left - Branding */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-dark via-dark-gray relative items-center justify-center overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gold rounded-full blur-[128px]" />
@@ -52,7 +51,6 @@ export default function ForgotPasswordPage() {
         </motion.div>
       </div>
 
-      {/* Right - Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-md">
           <motion.div
@@ -78,6 +76,12 @@ export default function ForgotPasswordPage() {
                     No worries. Enter your email and we&apos;ll send you a reset link.
                   </p>
 
+                  {error && (
+                    <div className="mb-5 p-3 rounded-lg bg-error/10 border border-error/20 text-sm text-error">
+                      {error}
+                    </div>
+                  )}
+
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <Input
                       label="Email Address"
@@ -85,11 +89,11 @@ export default function ForgotPasswordPage() {
                       placeholder="your@email.com"
                       icon={<Mail className="h-4 w-4" />}
                       value={email}
-                      onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                      error={error}
+                      onChange={(e) => { setEmail(e.target.value); setFieldError(""); clearError(); }}
+                      error={fieldError}
                     />
 
-                    <Button type="submit" variant="primary" size="lg" loading={isLoading} className="w-full">
+                    <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">
                       Send Reset Link
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>

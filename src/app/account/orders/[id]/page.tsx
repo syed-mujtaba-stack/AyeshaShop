@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { orders } from "@/data/orders";
+import { useAuth } from "@/hooks/use-auth";
+import { subscribeToOrder } from "@/lib/firestore";
 import { formatPrice, getStatusColor, cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +21,7 @@ import {
   FileText,
   ShoppingBag,
 } from "lucide-react";
+import type { Order } from "@/types";
 
 const statusSteps: { key: string; label: string; icon: React.ElementType }[] = [
   { key: "pending", label: "Pending", icon: Clock },
@@ -44,7 +47,27 @@ const paymentLabels: Record<string, string> = {
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const order = orders.find((o) => o.id === params.id);
+  const { user } = useAuth();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const orderId = params.id as string;
+    const unsub = subscribeToOrder(user.uid, orderId, (data) => {
+      setOrder(data);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, [user, params.id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!order) {
     return (

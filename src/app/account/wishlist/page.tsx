@@ -1,18 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { currentCustomer } from "@/data/customers";
+import { useFirestoreWishlist } from "@/hooks/use-firestore-user";
+import { products } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Trash2, ShoppingBag, Star } from "lucide-react";
 
 export default function WishlistPage() {
-  const [wishlistItems, setWishlistItems] = useState(currentCustomer.wishlist);
+  const { productIds, loading, remove } = useFirestoreWishlist();
 
-  const removeItem = (productId: string) => {
-    setWishlistItems((prev) => prev.filter((item) => item.id !== productId));
+  const wishlistProducts = products.filter((p) => productIds.has(p.id));
+
+  const handleRemove = async (productId: string) => {
+    await remove(productId);
   };
 
   return (
@@ -21,7 +23,7 @@ export default function WishlistPage() {
         <div>
           <h1 className="font-heading text-2xl font-bold text-dark">My Wishlist</h1>
           <p className="text-medium-gray text-sm mt-1">
-            {wishlistItems.length} item{wishlistItems.length !== 1 && "s"}
+            {wishlistProducts.length} item{wishlistProducts.length !== 1 && "s"}
           </p>
         </div>
         <Link href="/shop">
@@ -32,7 +34,20 @@ export default function WishlistPage() {
         </Link>
       </div>
 
-      {wishlistItems.length === 0 ? (
+      {loading ? (
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse rounded-xl border border-border bg-white overflow-hidden">
+              <div className="aspect-[4/5] bg-lighter-gray" />
+              <div className="p-4 space-y-2">
+                <div className="h-2 bg-lighter-gray rounded w-16" />
+                <div className="h-3 bg-lighter-gray rounded w-32" />
+                <div className="h-4 bg-lighter-gray rounded w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : wishlistProducts.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <div className="w-20 h-20 rounded-full bg-error/5 flex items-center justify-center mb-4">
@@ -51,7 +66,7 @@ export default function WishlistPage() {
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {wishlistItems.map((product) => (
+          {wishlistProducts.map((product) => (
             <Card key={product.id} className="group overflow-hidden hover:shadow-md transition-all duration-300">
               <div className="relative aspect-[4/5] overflow-hidden bg-lighter-gray">
                 <img
@@ -67,7 +82,7 @@ export default function WishlistPage() {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    removeItem(product.id);
+                    handleRemove(product.id);
                   }}
                   className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-error hover:bg-white transition-all shadow-sm"
                 >

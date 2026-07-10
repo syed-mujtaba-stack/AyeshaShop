@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { currentCustomer, notifications as defaultNotifications } from "@/data/customers";
+import { useFirestoreNotifications } from "@/hooks/use-firestore-user";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Bell, Package, Megaphone, Settings, CheckCheck } from "lucide-react";
+import { Bell, Package, Megaphone, Settings, CheckCheck, Trash2 } from "lucide-react";
 
 const notificationIcons = {
   order: Package,
@@ -13,23 +12,8 @@ const notificationIcons = {
 };
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(
-    [...defaultNotifications].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
-  );
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
-
-  const toggleRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n))
-    );
-  };
+  const { notifications, loading, unreadCount, markRead, markAllRead, remove } =
+    useFirestoreNotifications();
 
   return (
     <div className="space-y-6">
@@ -46,7 +30,7 @@ export default function NotificationsPage() {
           <Button
             variant="secondary"
             size="sm"
-            onClick={markAllRead}
+            onClick={() => markAllRead()}
             className="flex items-center gap-2"
           >
             <CheckCheck className="w-4 h-4" />
@@ -55,7 +39,21 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      {notifications.length === 0 ? (
+      {loading ? (
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-4">
+              <div className="flex gap-3">
+                <div className="w-10 h-10 rounded-xl bg-lighter-gray" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 bg-lighter-gray rounded w-40" />
+                  <div className="h-2 bg-lighter-gray rounded w-56" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : notifications.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-20 h-20 rounded-full bg-gold/5 flex items-center justify-center mb-4">
             <Bell className="w-10 h-10 text-gold/40" />
@@ -75,9 +73,8 @@ export default function NotificationsPage() {
             return (
               <div
                 key={notification.id}
-                onClick={() => toggleRead(notification.id)}
                 className={cn(
-                  "rounded-xl p-4 border cursor-pointer transition-all duration-200",
+                  "rounded-xl p-4 border transition-all duration-200",
                   notification.read
                     ? "bg-white border-border hover:shadow-sm"
                     : "bg-gold/[0.03] border-gold/15 shadow-sm"
@@ -128,6 +125,28 @@ export default function NotificationsPage() {
                     <p className="text-sm text-medium-gray mt-0.5 line-clamp-2">
                       {notification.message}
                     </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      {!notification.read && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs text-gold h-7 px-2"
+                          onClick={() => markRead(notification.id)}
+                        >
+                          <CheckCheck className="w-3.5 h-3.5 mr-1" />
+                          Mark Read
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-error h-7 px-2"
+                        onClick={() => remove(notification.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

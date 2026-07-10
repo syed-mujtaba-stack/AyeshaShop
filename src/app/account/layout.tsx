@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
-import { currentCustomer } from "@/data/customers";
+import { useAuth } from "@/hooks/use-auth";
 import {
   LayoutDashboard,
   Package,
@@ -29,12 +29,36 @@ const sidebarLinks = [
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, initialized, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const customer = currentCustomer;
+
+  useEffect(() => {
+    if (initialized && !user) {
+      router.push("/login");
+    }
+  }, [initialized, user, router]);
+
+  if (!initialized || !user) {
+    return (
+      <div className="min-h-screen bg-off-white flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const displayName = user.displayName || "User";
+  const firstName = displayName.split(" ")[0];
+  const email = user.email || "";
+  const photoURL = user.photoURL;
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
+  };
 
   return (
     <div className="min-h-screen bg-off-white">
-      {/* Mobile Header */}
       <div className="lg:hidden sticky top-0 z-40 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -43,14 +67,17 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
         <span className="font-heading text-lg font-semibold">My Account</span>
-        <div className="w-9 h-9 rounded-full bg-gold/10 flex items-center justify-center text-gold text-sm font-semibold">
-          {getInitials(`${customer.firstName} ${customer.lastName}`)}
+        <div className="w-9 h-9 rounded-full bg-gold/10 flex items-center justify-center text-gold text-sm font-semibold overflow-hidden">
+          {photoURL ? (
+            <img src={photoURL} alt={firstName} className="w-full h-full object-cover" />
+          ) : (
+            getInitials(displayName)
+          )}
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-          {/* Sidebar */}
           <aside
             className={cn(
               "lg:w-64 flex-shrink-0",
@@ -67,25 +94,18 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             )}
 
             <div className={cn("lg:sticky lg:top-8", mobileMenuOpen && "p-4")}>
-              {/* Desktop User Card */}
               <div className="hidden lg:block mb-6">
                 <div className="flex items-center gap-4 p-4 rounded-xl bg-white border border-border shadow-sm">
                   <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center text-gold font-semibold text-lg overflow-hidden">
-                    {customer.avatar ? (
-                      <img
-                        src={customer.avatar}
-                        alt={customer.firstName}
-                        className="w-full h-full object-cover"
-                      />
+                    {photoURL ? (
+                      <img src={photoURL} alt={firstName} className="w-full h-full object-cover" />
                     ) : (
-                      getInitials(`${customer.firstName} ${customer.lastName}`)
+                      getInitials(displayName)
                     )}
                   </div>
                   <div>
-                    <p className="font-heading font-semibold text-dark">
-                      {customer.firstName} {customer.lastName}
-                    </p>
-                    <p className="text-xs text-medium-gray">{customer.email}</p>
+                    <p className="font-heading font-semibold text-dark">{displayName}</p>
+                    <p className="text-xs text-medium-gray">{email}</p>
                   </div>
                 </div>
               </div>
@@ -117,19 +137,18 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                 })}
 
                 <div className="pt-4 mt-4 border-t border-border">
-                  <Link
-                    href="/"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-error hover:bg-error/5 transition-all duration-200"
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-error hover:bg-error/5 transition-all duration-200 w-full"
                   >
                     <LogOut className="w-5 h-4" />
                     <span>Sign Out</span>
-                  </Link>
+                  </button>
                 </div>
               </nav>
             </div>
           </aside>
 
-          {/* Main Content */}
           <main className="flex-1 min-w-0">{children}</main>
         </div>
       </div>

@@ -1,23 +1,95 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform, useAnimationFrame } from "framer-motion";
 import { ArrowRight, Heart, Eye } from "lucide-react";
 import { getFeaturedProducts } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
+import type { PanInfo } from "framer-motion";
+
+function useMediaWidth() {
+  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
+  useEffect(() => {
+    const onResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}
 
 export function TrendingProducts() {
   const products = getFeaturedProducts().slice(0, 6);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+
+  const scrollX = useMotionValue(0);
+  const x = useTransform(scrollX, (v) => v);
+
+  const speed = 35;
+  const isDragging = useRef(false);
+  const lastPointerX = useRef(0);
+  const lastPointerTime = useRef(0);
+  const velocity = useRef(0);
+
+  const vw = useMediaWidth();
+  const cardW = vw < 640 ? 240 : vw < 1024 ? 270 : 300;
+  const gap = vw < 640 ? 16 : 20;
+  const singleSetW = products.length * (cardW + gap) - gap;
+
+  const animate = useCallback(
+    (time: number, delta: number) => {
+      if (isDragging.current || !marqueeRef.current) return;
+      const dt = delta / 1000;
+      let offset = scrollX.get() - speed * dt;
+      if (Math.abs(offset) >= singleSetW) offset += singleSetW;
+      scrollX.set(offset);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [singleSetW]
+  );
+
+  useAnimationFrame(animate);
+
+  const handleDragStart = useCallback(
+    (_: unknown, info: PanInfo) => {
+      isDragging.current = true;
+      lastPointerX.current = info.point.x;
+      lastPointerTime.current = performance.now();
+      velocity.current = 0;
+    },
+    []
+  );
+
+  const handleDrag = useCallback(
+    (_: unknown, info: PanInfo) => {
+      const now = performance.now();
+      const dt = (now - lastPointerTime.current) / 1000;
+      if (dt > 0) velocity.current = (info.point.x - lastPointerX.current) / dt;
+      lastPointerX.current = info.point.x;
+      lastPointerTime.current = now;
+      let offset = scrollX.get() + info.delta.x;
+      if (offset < -singleSetW) offset += singleSetW;
+      if (offset > 0) offset -= singleSetW;
+      scrollX.set(offset);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [singleSetW]
+  );
+
+  const handleDragEnd = useCallback(() => {
+    isDragging.current = false;
+    const v = velocity.current;
+    velocity.current = 0;
+    const momentumOffset = v * 0.15;
+    let offset = scrollX.get() + momentumOffset;
+    if (offset < -singleSetW) offset += singleSetW;
+    if (offset > 0) offset -= singleSetW;
+    scrollX.set(offset);
+  }, [scrollX, singleSetW]);
 
   return (
-    <section ref={containerRef} className="py-14 lg:py-16 bg-white overflow-hidden">
+    <section className="py-14 lg:py-16 bg-white overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -44,22 +116,36 @@ export function TrendingProducts() {
         </motion.div>
       </div>
 
-      <div className="relative">
+      <div
+        ref={viewportRef}
+        className="relative cursor-grab active:cursor-grabbing select-none"
+      >
         <motion.div
+          ref={marqueeRef}
           style={{ x }}
-          className="flex gap-4 lg:gap-5 pl-4 sm:pl-6 lg:pl-[calc((100vw-1280px)/2)]"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0}
+          onDragStart={handleDragStart}
+          onDrag={handleDrag}
+          onDragEnd={handleDragEnd}
+          className="flex w-max will-change-transform"
         >
-          {products.map((product, i) => (
+          {[...products, ...products].map((product, i) => (
             <motion.div
-              key={product.id}
+              key={`${product.id}-${i}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
-              className="group shrink-0 w-[240px] sm:w-[270px] lg:w-[300px]"
+              transition={{ delay: (i % products.length) * 0.08, duration: 0.5 }}
+              className="shrink-0 px-2 sm:px-2.5 lg:px-2.5"
+              style={{ width: cardW }}
             >
-              <Link href={`/product/${product.slug}`} className="block">
-                <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-lighter-gray mb-3 transition-all duration-500 group-hover:shadow-xl">
+              <Link href={`/product/${product.slug}`} className="block group">
+                <div
+                  className="relative rounded-xl overflow-hidden bg-lighter-gray mb-3 transition-all duration-500 group-hover:shadow-xl"
+                  style={{ aspectRatio: "3/4" }}
+                >
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-all duration-[600ms] group-hover:scale-105"
                     style={{ backgroundImage: `url(${product.images[0]})` }}

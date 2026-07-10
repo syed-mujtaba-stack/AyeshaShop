@@ -1,19 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SITE_NAME, SITE_TAGLINE } from "@/constants";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { user, loading, error, signIn, signInWithGoogle, clearError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  useEffect(() => {
+    if (user) router.push("/account");
+  }, [user, router]);
+
+  useEffect(() => {
+    clearError();
+  }, [form.email, form.password, clearError]);
 
   const validate = () => {
     const errs: typeof errors = {};
@@ -28,14 +39,17 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsLoading(false);
+    const success = await signIn(form.email, form.password);
+    if (success) router.push("/account");
+  };
+
+  const handleGoogleSignIn = async () => {
+    const success = await signInWithGoogle();
+    if (success) router.push("/account");
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* Left - Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-md">
           <motion.div
@@ -51,6 +65,12 @@ export default function LoginPage() {
             <p className="text-medium-gray mb-8">
               Sign in to your {SITE_NAME} account to continue
             </p>
+
+            {error && (
+              <div className="mb-5 p-3 rounded-lg bg-error/10 border border-error/20 text-sm text-error">
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input
@@ -100,13 +120,12 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              <Button type="submit" variant="primary" size="lg" loading={isLoading} className="w-full">
+              <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">
                 Sign In
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </form>
 
-            {/* Social Login */}
             <div className="mt-8">
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
@@ -118,7 +137,12 @@ export default function LoginPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="secondary" className="w-full">
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                >
                   <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -127,7 +151,7 @@ export default function LoginPage() {
                   </svg>
                   Google
                 </Button>
-                <Button variant="secondary" className="w-full">
+                <Button variant="secondary" className="w-full" disabled>
                   <svg className="h-4 w-4 mr-2" fill="#1877F2" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
@@ -146,7 +170,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right - Branding */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-dark to-dark-gray relative items-center justify-center overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-72 h-72 bg-gold rounded-full blur-[128px]" />
