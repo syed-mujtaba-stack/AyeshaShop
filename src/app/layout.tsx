@@ -7,6 +7,7 @@ import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { PageTransition } from "@/components/common/PageTransition";
+import { PWAInstall } from "@/components/common/PWAInstall";
 import { SITE_NAME, SITE_DESCRIPTION } from "@/constants";
 import "./globals.css";
 
@@ -68,6 +69,7 @@ export default function RootLayout({
             </PageTransition>
             <Footer />
             <MobileBottomNav />
+            <PWAInstall />
           </LoaderWrapper>
         </Providers>
       </body>
