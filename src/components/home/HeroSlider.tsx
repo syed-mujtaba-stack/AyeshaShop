@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useLoaderReady } from "@/components/common/LoaderContext";
 
 const slides = [
   {
@@ -36,34 +36,56 @@ const slides = [
 export function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const loaded = useLoaderReady();
+  const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDirection(1);
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const goTo = (index: number) => {
-    setDirection(index > current ? 1 : -1);
-    setCurrent(index);
-  };
-
-  const goNext = () => {
+  const goNext = useCallback(() => {
     setDirection(1);
     setCurrent((prev) => (prev + 1) % slides.length);
-  };
+  }, []);
 
-  const goPrev = () => {
+  const goPrev = useCallback(() => {
     setDirection(-1);
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  };
+  }, []);
+
+  const goTo = useCallback((index: number) => {
+    setDirection(index > current ? 1 : -1);
+    setCurrent(index);
+  }, [current]);
+
+  useEffect(() => {
+    if (isPaused) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
+    }
+    intervalRef.current = setInterval(goNext, 6000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isPaused, goNext]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "ArrowLeft") goPrev();
+      else if (e.key === "ArrowRight") goNext();
+    },
+    [goNext, goPrev]
+  );
 
   const slide = slides[current];
 
   return (
-    <div className="relative h-[70vh] min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] overflow-hidden bg-dark">
+    <div
+      className="relative h-[70vh] min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] overflow-hidden bg-dark"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="region"
+      aria-label="Hero carousel"
+    >
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={current}
@@ -83,49 +105,81 @@ export function HeroSlider() {
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: loaded ? 40 : 0 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: loaded ? 0.15 : 0 }}
             className="max-w-xl"
           >
-            <p className="text-gold-light text-sm sm:text-base font-medium tracking-[0.2em] uppercase mb-3">
-              {slide.subtitle}
-            </p>
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-7xl text-white font-bold leading-tight mb-4">
-              {slide.title}
-            </h1>
-            <p className="text-white/70 text-sm sm:text-base lg:text-lg leading-relaxed mb-8 max-w-lg">
-              {slide.description}
-            </p>
-            <Link
-              href={slide.href}
-              className="inline-flex items-center justify-center h-12 px-8 text-base rounded-lg gold-gradient text-white shadow-sm hover:shadow-lg hover:opacity-90 transition-all duration-300 font-medium"
+            <motion.p
+              initial={{ opacity: 0, y: loaded ? 20 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: loaded ? 0.3 : 0 }}
+              className="text-gold-light text-sm sm:text-base font-medium tracking-[0.2em] uppercase mb-3"
             >
-              {slide.cta}
-            </Link>
+              {slide.subtitle}
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: loaded ? 30 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: loaded ? 0.45 : 0 }}
+              className="font-heading text-4xl sm:text-5xl lg:text-7xl text-white font-bold leading-tight mb-4"
+            >
+              {slide.title}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: loaded ? 20 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: loaded ? 0.6 : 0 }}
+              className="text-white/70 text-sm sm:text-base lg:text-lg leading-relaxed mb-8 max-w-lg"
+            >
+              {slide.description}
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: loaded ? 20 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: loaded ? 0.75 : 0 }}
+            >
+              <Link
+                href={slide.href}
+                className="inline-flex items-center justify-center h-12 px-8 text-base rounded-lg gold-gradient text-white shadow-sm hover:shadow-lg hover:opacity-90 transition-all duration-300 font-medium"
+              >
+                {slide.cta}
+              </Link>
+            </motion.div>
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Navigation arrows */}
-      <button
+      <motion.button
         onClick={goPrev}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: loaded ? 1 : 0 }}
+        transition={{ duration: 0.5, delay: loaded ? 0.9 : 0 }}
         className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all text-white"
         aria-label="Previous slide"
       >
         <ChevronLeft className="h-5 w-5" />
-      </button>
-      <button
+      </motion.button>
+      <motion.button
         onClick={goNext}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: loaded ? 1 : 0 }}
+        transition={{ duration: 0.5, delay: loaded ? 0.9 : 0 }}
         className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all text-white"
         aria-label="Next slide"
       >
         <ChevronRight className="h-5 w-5" />
-      </button>
+      </motion.button>
 
       {/* Dots */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: loaded ? 1 : 0 }}
+        transition={{ duration: 0.5, delay: loaded ? 1.0 : 0 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2"
+      >
         {slides.map((_, i) => (
           <button
             key={i}
@@ -136,7 +190,7 @@ export function HeroSlider() {
             aria-label={`Go to slide ${i + 1}`}
           />
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

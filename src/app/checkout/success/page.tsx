@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check, Package, Gift, ArrowRight, Heart } from "lucide-react";
@@ -16,29 +16,22 @@ interface OrderData {
   createdAt: string;
 }
 
-export default function CheckoutSuccessPage() {
-  const [order, setOrder] = useState<OrderData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+function readOrderSnapshot(): OrderData | null {
+  if (typeof window === "undefined") return null;
+  try {
     const stored = sessionStorage.getItem("ayesha-last-order");
-    if (stored) {
-      try {
-        setOrder(JSON.parse(stored));
-      } catch {
-        setOrder(null);
-      }
-    }
-    setLoading(false);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-off-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
   }
+}
+
+function subscribeOrder() {
+  return () => {};
+}
+
+export default function CheckoutSuccessPage() {
+  const order = useSyncExternalStore(subscribeOrder, readOrderSnapshot, () => null);
 
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 7);

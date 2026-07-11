@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, ChevronDown, RotateCcw } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { cn, formatPrice } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { CATEGORIES } from "@/constants";
 
 const BRANDS = [
@@ -115,15 +115,14 @@ export function ShopFilters({
   onFilterChange,
   onClose,
   isMobile,
-  totalProducts,
   filteredCount,
 }: ShopFiltersProps) {
   const [searchInput, setSearchInput] = useState(filters.search);
   const [pricePreset, setPricePreset] = useState<string | null>(null);
 
-  useEffect(() => {
+  if (searchInput !== filters.search) {
     setSearchInput(filters.search);
-  }, [filters.search]);
+  }
 
   const updateFilter = useCallback(
     (key: keyof FilterState, value: unknown) => {

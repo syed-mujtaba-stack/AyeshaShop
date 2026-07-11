@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useMemo, useCallback, useEffect } from "react";
+import { Suspense, useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
@@ -140,11 +140,22 @@ function SearchContent() {
     router.replace(pathname, { scroll: false });
   }, [router, pathname]);
 
-  useEffect(() => {
+  const [prevQuery, setPrevQuery] = useState(query);
+  const [prevCategory, setPrevCategory] = useState(categoryFilter);
+  const [prevSort, setPrevSort] = useState(sortParam);
+
+  if (prevQuery !== query) {
+    setPrevQuery(query);
     setSearchInput(query);
+  }
+  if (prevCategory !== categoryFilter) {
+    setPrevCategory(categoryFilter);
     setSelectedCategory(categoryFilter);
+  }
+  if (prevSort !== sortParam) {
+    setPrevSort(sortParam);
     setSort(sortParam);
-  }, [query, categoryFilter, sortParam]);
+  }
 
   const hasActiveFilters = !!selectedCategory;
 

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Providers } from "@/components/common/Providers";
 import { LoaderWrapper } from "@/components/common/LoaderWrapper";
 import { Navbar } from "@/components/layout/Navbar";
@@ -45,12 +46,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="preload" as="image" href="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1440&q=80" />
+        <link rel="preload" as="image" href="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=1440&q=80" />
+        <link rel="preload" as="image" href="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1440&q=80" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+      </head>
       <body className="min-h-screen bg-off-white antialiased">
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js")})}`,
-          }}
-        />
+        <Script id="sw-register" strategy="afterInteractive">
+          {`if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js")})}`}
+        </Script>
         <Providers>
           <LoaderWrapper>
             {/* Sticky header container: announcement bar + navbar */}

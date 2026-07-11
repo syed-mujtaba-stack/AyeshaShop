@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Globe, Camera, MessageCircle, Video, Heart, Mail, MapPin, Phone } from "lucide-react";
 import { SITE_NAME, SITE_FULL_NAME } from "@/constants";
@@ -46,14 +48,20 @@ export function Footer() {
               Subscribe for exclusive access to new collections, private sales, and luxury style inspiration.
             </p>
             <div className="flex gap-2 max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-gold"
-              />
-              <Button variant="gold" className="shrink-0">
-                Subscribe
-              </Button>
+              <form
+                onSubmit={(e) => { e.preventDefault(); }}
+                className="flex gap-2 flex-1"
+              >
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-gold flex-1"
+                  aria-label="Email address for newsletter"
+                />
+                <Button variant="gold" className="shrink-0" type="submit">
+                  Subscribe
+                </Button>
+              </form>
             </div>
           </div>
         </div>
@@ -136,7 +144,7 @@ export function Footer() {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-white/40 text-xs">
-              &copy; {new Date().getFullYear()} {SITE_FULL_NAME} SMC Pvt. Ltd. All rights reserved.
+              &copy; 2026 {SITE_FULL_NAME} SMC Pvt. Ltd. All rights reserved.
             </p>
             <div className="flex items-center gap-1 text-white/30 text-xs">
               Made with <Heart className="h-3 w-3 text-gold" /> in Pakistan

@@ -14,7 +14,7 @@ export function LuxuryCollections() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-          className="relative h-[300px] lg:h-auto overflow-hidden"
+          className="relative h-[300px] lg:h-auto overflow-hidden group"
         >
           <div
             className="absolute inset-0 bg-cover bg-center transition-all duration-[1000ms] group-hover:scale-105"

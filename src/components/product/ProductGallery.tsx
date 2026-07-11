@@ -109,7 +109,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         <div
           ref={imageRef}
           className={cn(
-            "relative overflow-hidden rounded-xl bg-lighter-gray",
+            "relative overflow-hidden rounded-xl bg-lighter-gray group",
             "aspect-[4/5] md:aspect-[3/4] w-full",
             "cursor-crosshair"
           )}

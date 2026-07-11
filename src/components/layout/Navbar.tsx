@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -292,6 +292,7 @@ export function Navbar() {
                   >
                     <div className="w-7 h-7 rounded-full bg-gold/10 flex items-center justify-center text-gold text-xs font-semibold overflow-hidden">
                       {photoURL ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={photoURL} alt={displayName} className="w-full h-full object-cover" />
                       ) : (
                         getInitials(displayName)
@@ -435,8 +436,11 @@ export function Navbar() {
 
 function CartButton() {
   const { openDrawer, getItemCount } = useCart();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const count = mounted ? getItemCount() : 0;
 
   return (

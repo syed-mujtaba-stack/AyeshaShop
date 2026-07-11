@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { SHIPPING_COST, FREE_SHIPPING_THRESHOLD } from "@/constants";
 
 export function CartDrawer() {
@@ -42,6 +41,7 @@ export function CartDrawer() {
               <button
                 onClick={closeDrawer}
                 className="p-2 hover:bg-lighter-gray rounded-full transition-colors"
+                aria-label="Close cart"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -108,6 +108,7 @@ export function CartDrawer() {
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="p-1.5 hover:bg-lighter-gray transition-colors"
+                              aria-label="Decrease quantity"
                             >
                               <Minus className="h-3 w-3" />
                             </button>
@@ -117,6 +118,7 @@ export function CartDrawer() {
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               className="p-1.5 hover:bg-lighter-gray transition-colors"
+                              aria-label="Increase quantity"
                             >
                               <Plus className="h-3 w-3" />
                             </button>
@@ -124,6 +126,7 @@ export function CartDrawer() {
                           <button
                             onClick={() => removeItem(item.id)}
                             className="p-1.5 text-medium-gray hover:text-error transition-colors"
+                            aria-label="Remove item"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

@@ -37,30 +37,46 @@ export function MobileBottomNav() {
           const isActive = href !== "#" && pathname === href;
           const badgeCount = badge === "cart" ? getItemCount() : badge === "wishlist" ? wishlistItems.length : 0;
 
-          const content = (
-            <button
-              onClick={() => handleAction(action)}
-              className="flex flex-col items-center justify-center gap-0.5 relative min-w-[60px] py-1"
-            >
-              <div className="relative">
-                <Icon className={cn("h-5 w-5", isActive ? "text-gold" : "text-medium-gray")} />
-                {badgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-gold text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-                    {badgeCount > 9 ? "9+" : badgeCount}
-                  </span>
-                )}
-              </div>
-              <span className={cn("text-[10px] font-medium", isActive ? "text-gold" : "text-medium-gray")}>
-                {label}
-              </span>
-            </button>
+          const iconEl = (
+            <div className="relative">
+              <Icon className={cn("h-5 w-5", isActive ? "text-gold" : "text-medium-gray")} />
+              {badgeCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-gold text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                  {badgeCount > 9 ? "9+" : badgeCount}
+                </span>
+              )}
+            </div>
           );
 
-          if (action) return <div key={label}>{content}</div>;
+          const labelEl = (
+            <span className={cn("text-[10px] font-medium", isActive ? "text-gold" : "text-medium-gray")}>
+              {label}
+            </span>
+          );
+
+          if (action) {
+            return (
+              <button
+                key={label}
+                onClick={() => handleAction(action)}
+                className="flex flex-col items-center justify-center gap-0.5 relative min-w-[60px] py-1"
+                aria-label={label}
+              >
+                {iconEl}
+                {labelEl}
+              </button>
+            );
+          }
 
           return (
-            <Link key={label} href={href}>
-              {content}
+            <Link
+              key={label}
+              href={href}
+              className="flex flex-col items-center justify-center gap-0.5 relative min-w-[60px] py-1"
+              aria-label={label}
+            >
+              {iconEl}
+              {labelEl}
             </Link>
           );
         })}

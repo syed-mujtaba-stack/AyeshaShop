@@ -12,7 +12,7 @@ export function BrandSlider() {
   const doubled = [...brands, ...brands];
 
   return (
-    <section className="py-12 lg:py-14 bg-white overflow-hidden">
+    <section className="py-12 lg:py-14 bg-white overflow-hidden" aria-hidden="true">
       <div className="relative">
         <motion.div
           initial={{ opacity: 0 }}

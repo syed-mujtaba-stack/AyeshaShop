@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { GiDress } from "react-icons/gi";
 import { PiHandbagSimple } from "react-icons/pi";
@@ -17,19 +17,36 @@ const ORBIT_ICONS: IconType[] = [
 ];
 
 const GOLD = "#C9A227";
-const EASE_PREMIUM = [0.25, 0.1, 0.25, 1] as const;
+const GOLD_GLOW = "rgba(201,162,39,0.12)";
+const EASE_PREMIUM = [0.22, 0.61, 0.36, 1] as const;
+const EASE_MERGE = [0.45, 0, 0.15, 1] as const;
+const MIN_DISPLAY_MS = 2000;
 
-const RADIUS = { sm: 68, lg: 90 };
+interface IconVariance {
+  speed: number;
+  floatAmp: number;
+  floatFreq: number;
+  depthScale: [number, number];
+  depthOpacity: [number, number];
+}
+
+const ICON_VARIANCE: IconVariance[] = [
+  { speed: 15, floatAmp: 2.5, floatFreq: 2.8, depthScale: [0.95, 1.05], depthOpacity: [0.85, 1] },
+  { speed: 18, floatAmp: 3.0, floatFreq: 2.2, depthScale: [0.92, 1.08], depthOpacity: [0.8, 1] },
+  { speed: 14, floatAmp: 2.0, floatFreq: 3.1, depthScale: [0.96, 1.04], depthOpacity: [0.88, 1] },
+  { speed: 17, floatAmp: 2.8, floatFreq: 2.5, depthScale: [0.93, 1.07], depthOpacity: [0.82, 1] },
+  { speed: 16, floatAmp: 2.2, floatFreq: 2.9, depthScale: [0.94, 1.06], depthOpacity: [0.86, 1] },
+];
 
 function useReduced() {
   return useReducedMotion() ?? false;
 }
 
 function useRadius() {
-  const [r, setR] = useState(RADIUS.lg);
+  const [r, setR] = useState(90);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
-    const handler = () => setR(mq.matches ? RADIUS.sm : RADIUS.lg);
+    const handler = () => setR(mq.matches ? 68 : 90);
     handler();
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
@@ -39,41 +56,66 @@ function useRadius() {
 
 interface PremiumLoaderProps {
   onComplete: () => void;
+  ready: boolean;
 }
 
-export function PremiumLoader({ onComplete }: PremiumLoaderProps) {
+export function PremiumLoader({ onComplete, ready }: PremiumLoaderProps) {
   const reduced = useReduced();
   const radius = useRadius();
+  const startTime = useRef(0);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [phase, setPhase] = useState<
-    "dress" | "reveal" | "orbit" | "merge" | "logo" | "exit" | "done"
+    "dress" | "reveal" | "orbit" | "merge" | "logo" | "tagline" | "done"
   >("dress");
 
+  const clearTimeouts = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  }, []);
+
+  const schedule = useCallback(
+    (next: typeof phase, delay: number) => {
+      const id = setTimeout(() => setPhase(next), delay);
+      timers.current.push(id);
+    },
+    []
+  );
+
+  // Clean up all timers on unmount
+  useEffect(() => () => clearTimeouts(), [clearTimeouts]);
+
+  useEffect(() => {
+    startTime.current = performance.now();
+  }, []);
+
+  // Phase 1: dress → reveal → orbit
   useEffect(() => {
     if (reduced) {
-      const t = [
-        setTimeout(() => setPhase("logo"), 300),
-        setTimeout(() => setPhase("exit"), 1000),
-      ];
-      return () => t.forEach(clearTimeout);
+      schedule("logo", 300);
+      schedule("tagline", 600);
+      schedule("done", 1000);
+      return;
     }
+    schedule("reveal", 500);
+    schedule("orbit", 2200);
+  }, [reduced, schedule]);
 
-    const t = [
-      setTimeout(() => setPhase("reveal"), 600),
-      setTimeout(() => setPhase("orbit"), 2400),
-      setTimeout(() => setPhase("merge"), 5200),
-      setTimeout(() => setPhase("logo"), 6000),
-      setTimeout(() => setPhase("exit"), 7400),
-    ];
-    return () => t.forEach(clearTimeout);
-  }, [reduced]);
-
+  // Phase 2: orbit → merge → logo → tagline → done (only fires once)
   useEffect(() => {
-    if (phase === "exit") {
-      const t = setTimeout(() => {
-        setPhase("done");
-        onComplete();
-      }, 900);
-      return () => clearTimeout(t);
+    if (phase === "orbit" && ready && !reduced) {
+      const elapsed = performance.now() - startTime.current;
+      const remaining = Math.max(0, MIN_DISPLAY_MS - elapsed);
+      schedule("merge", remaining);
+      schedule("logo", remaining + 700);
+      schedule("tagline", remaining + 1100);
+      schedule("done", remaining + 2400);
+    }
+  }, [phase, ready, reduced, schedule]);
+
+  // Signal completion
+  useEffect(() => {
+    if (phase === "done") {
+      onComplete();
     }
   }, [phase, onComplete]);
 
@@ -86,19 +128,33 @@ export function PremiumLoader({ onComplete }: PremiumLoaderProps) {
     [radius]
   );
 
-  if (phase === "done") return null;
+  const isActive = (p: string) => {
+    if (p === "dress") return phase === "dress";
+    if (p === "orbiting") return ["reveal", "orbit"].includes(phase);
+    if (p === "logophase") return ["merge", "logo", "tagline"].includes(phase);
+    return false;
+  };
 
   return (
-    <motion.div
+    <div
       role="status"
       aria-label="Loading Ayesha Fashion"
       aria-live="polite"
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-white"
-      initial={{ opacity: 1 }}
-      animate={phase === "exit" ? { opacity: 0 } : { opacity: 1 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
-      style={{ willChange: "opacity" }}
+      className="absolute inset-0 flex items-center justify-center"
+      style={{
+        background: `radial-gradient(ellipse at center, #ffffff 0%, #fafaf9 55%, #f5f4f0 100%)`,
+      }}
     >
+      {/* Subtle gold ambient glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at 50% 50%, ${GOLD_GLOW} 0%, transparent 50%)`,
+          opacity: isActive("orbiting") || isActive("logophase") ? 1 : 0.3,
+          transition: "opacity 1.2s ease",
+        }}
+      />
+
       <div
         className="relative flex items-center justify-center"
         style={{ width: radius * 2 + 60, height: radius * 2 + 60 }}
@@ -110,7 +166,7 @@ export function PremiumLoader({ onComplete }: PremiumLoaderProps) {
           animate={
             phase === "reveal" || phase === "orbit"
               ? { opacity: 0.12, scale: 0.65 }
-              : phase === "merge" || phase === "logo" || phase === "exit"
+              : ["merge", "logo", "tagline"].includes(phase)
                 ? { opacity: 0, scale: 0 }
                 : { opacity: 1, scale: 1 }
           }
@@ -128,66 +184,83 @@ export function PremiumLoader({ onComplete }: PremiumLoaderProps) {
 
         {/* Orbit ring */}
         <AnimatePresence>
-          {(phase === "reveal" || phase === "orbit" || phase === "merge") && (
+          {["reveal", "orbit", "merge"].includes(phase) && (
             <motion.div
               className="absolute"
               style={{ width: radius * 2, height: radius * 2 }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.5 }}
             >
-              <motion.div
-                className="w-full h-full"
-                animate={
-                  phase === "orbit" && !reduced ? { rotate: 360 } : { rotate: 0 }
-                }
-                transition={
-                  phase === "orbit"
-                    ? { rotate: { duration: 16, repeat: Infinity, ease: "linear" } }
-                    : { duration: 0.3 }
-                }
-                style={{ willChange: "transform" }}
-              >
-                {ORBIT_ICONS.map((Icon, i) => {
-                  const p = positions[i];
-                  return (
+              {ORBIT_ICONS.map((Icon, i) => {
+                const p = positions[i];
+                const v = ICON_VARIANCE[i];
+                const isOrbiting = phase === "orbit" && !reduced;
+
+                return (
+                  <motion.div
+                    key={i}
+                    className="absolute left-1/2 top-1/2"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={
+                      phase === "merge"
+                        ? { opacity: 0, scale: 0.15, x: 0, y: 0 }
+                        : { opacity: 1, scale: 1, x: p.x, y: p.y }
+                    }
+                    transition={
+                      phase === "merge"
+                        ? {
+                            duration: 0.65,
+                            delay: (ORBIT_ICONS.length - 1 - i) * 0.07,
+                            ease: EASE_MERGE,
+                          }
+                        : {
+                            duration: 0.75,
+                            delay: i * 0.16,
+                            type: "spring",
+                            stiffness: 65,
+                            damping: 13,
+                          }
+                    }
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    {/* Orbit wrapper: handles circular rotation around center */}
                     <motion.div
-                      key={i}
-                      className="absolute left-1/2 top-1/2"
-                      initial={{ opacity: 0, scale: 0 }}
                       animate={
-                        phase === "merge"
-                          ? { opacity: 0, scale: 0.2, x: 0, y: 0 }
-                          : { opacity: 1, scale: 1, x: p.x, y: p.y }
+                        isOrbiting
+                          ? { rotate: -360 }
+                          : { rotate: 0 }
                       }
                       transition={
-                        phase === "merge"
-                          ? {
-                              duration: 0.55,
-                              delay: (ORBIT_ICONS.length - 1 - i) * 0.06,
-                              ease: [0.4, 0, 1, 1],
-                            }
-                          : {
-                              duration: 0.65,
-                              delay: i * 0.16,
-                              type: "spring",
-                              stiffness: 70,
-                              damping: 12,
-                            }
+                        isOrbiting
+                          ? { rotate: { duration: v.speed, repeat: Infinity, ease: "linear" } }
+                          : { duration: 0.4 }
                       }
-                      style={{ willChange: "transform, opacity" }}
+                      style={{
+                        transformOrigin: `${-p.x}px ${-p.y}px`,
+                        willChange: "transform",
+                      }}
                     >
+                      {/* Float wrapper: subtle vertical bobbing */}
                       <motion.div
                         animate={
-                          phase === "orbit" && !reduced
-                            ? { rotate: -360 }
-                            : { rotate: 0 }
+                          isOrbiting
+                            ? {
+                                y: [0, -v.floatAmp, 0, v.floatAmp * 0.6, 0],
+                                scale: v.depthScale,
+                                opacity: v.depthOpacity,
+                              }
+                            : { y: 0, scale: 1, opacity: 1 }
                         }
                         transition={
-                          phase === "orbit"
-                            ? { rotate: { duration: 16, repeat: Infinity, ease: "linear" } }
-                            : { duration: 0.3 }
+                          isOrbiting
+                            ? {
+                                y: { duration: v.floatFreq, repeat: Infinity, ease: "easeInOut" },
+                                scale: { duration: v.floatFreq * 1.2, repeat: Infinity, ease: "easeInOut" },
+                                opacity: { duration: v.floatFreq * 1.4, repeat: Infinity, ease: "easeInOut" },
+                              }
+                            : { duration: 0.4 }
                         }
                         className="flex items-center justify-center"
                         style={{ width: 44, height: 44 }}
@@ -196,28 +269,29 @@ export function PremiumLoader({ onComplete }: PremiumLoaderProps) {
                           style={{
                             fontSize: 22,
                             color: GOLD,
-                            filter: "drop-shadow(0 1px 4px rgba(201,162,39,0.2))",
+                            filter: `drop-shadow(0 ${isOrbiting ? "2" : "1"}px ${isOrbiting ? "6" : "4"}px rgba(201,162,39,${isOrbiting ? 0.3 : 0.2}))`,
+                            transition: "filter 0.6s ease",
                           }}
                         />
                       </motion.div>
                     </motion.div>
-                  );
-                })}
-              </motion.div>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Logo + tagline */}
         <AnimatePresence>
-          {(phase === "logo" || phase === "exit") && (
+          {["logo", "tagline"].includes(phase) && (
             <motion.div
               key="logo"
               className="absolute flex flex-col items-center gap-2"
-              initial={{ opacity: 0, scale: 0.92, y: 6 }}
+              initial={{ opacity: 0, scale: 0.92, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: EASE_PREMIUM }}
+              exit={{ opacity: 0, scale: 0.96, y: -4 }}
+              transition={{ duration: 0.65, ease: EASE_PREMIUM }}
             >
               <span
                 className="font-heading text-4xl sm:text-5xl text-dark"
@@ -225,18 +299,23 @@ export function PremiumLoader({ onComplete }: PremiumLoaderProps) {
               >
                 AYESHA
               </span>
-              <motion.span
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.35, ease: EASE_PREMIUM }}
-                className="text-[10px] sm:text-[11px] uppercase tracking-[0.28em] text-medium-gray"
-              >
-                Curating Luxury for Modern Women
-              </motion.span>
+              <AnimatePresence>
+                {["tagline"].includes(phase) && (
+                  <motion.span
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5, ease: EASE_PREMIUM }}
+                    className="text-[10px] sm:text-[11px] uppercase tracking-[0.28em] text-medium-gray"
+                  >
+                    Curating Luxury for Modern Women
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-    </motion.div>
+    </div>
   );
 }

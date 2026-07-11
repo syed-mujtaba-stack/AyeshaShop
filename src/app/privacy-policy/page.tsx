@@ -1,4 +1,4 @@
-import { SITE_NAME, SITE_URL } from "@/constants";
+import { SITE_NAME } from "@/constants";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
             <Section title="Changes to This Policy">
               <p>
                 We may update this Privacy Policy from time to time. We will notify you of any material
-                changes by posting the new policy on this page and updating the "Last updated" date.
+                changes by posting the new policy on this page and updating the &quot;Last updated&quot; date.
                 We encourage you to review this policy periodically.
               </p>
             </Section>

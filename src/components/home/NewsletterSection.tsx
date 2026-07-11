@@ -37,6 +37,7 @@ export function NewsletterSection() {
                 type="email"
                 placeholder="Enter your email"
                 className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-gold/50 h-11 rounded-xl text-sm"
+                aria-label="Email address for newsletter"
               />
             </div>
             <Button variant="gold" size="default" className="shrink-0 rounded-xl px-5">

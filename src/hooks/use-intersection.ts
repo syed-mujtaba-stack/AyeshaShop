@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 export function useIntersection(options?: IntersectionObserverInit) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const optionsRef = useRef<IntersectionObserverInit | undefined>(options);
+
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   useEffect(() => {
     const element = ref.current;
@@ -15,11 +20,11 @@ export function useIntersection(options?: IntersectionObserverInit) {
         setIsVisible(true);
         observer.unobserve(element);
       }
-    }, options);
+    }, optionsRef.current);
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, [options]);
+  }, []);
 
   return { ref, isVisible };
 }

@@ -101,7 +101,7 @@ export default function ReturnPolicyPage() {
             <Section title="International Returns">
               <p>
                 International customers are responsible for return shipping costs. We recommend using a
-                trackable shipping method. Please ensure the customs declaration states "Returned Goods"
+                trackable shipping method. Please ensure the customs declaration states &quot;Returned Goods&quot;
                 to avoid additional customs charges. Original customs duties and taxes are non-refundable.
               </p>
             </Section>

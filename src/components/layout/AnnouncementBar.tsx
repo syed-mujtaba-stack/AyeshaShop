@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 
 const announcements = [
@@ -13,6 +13,16 @@ const announcements = [
 export function AnnouncementBar() {
   const [isVisible, setIsVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const next = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % announcements.length);
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+    const timer = setInterval(next, 4000);
+    return () => clearInterval(timer);
+  }, [isVisible, next]);
 
   if (!isVisible) return null;
 

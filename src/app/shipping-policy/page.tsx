@@ -76,7 +76,7 @@ export default function ShippingPolicyPage() {
                 Once shipped, you will receive an email with a tracking number and a link to track your
                 package. You can also track your order by logging into your account and visiting the
                 Orders section. For international shipments, tracking updates may be limited depending
-                on the destination country's postal service.
+                on the destination country&apos;s postal service.
               </p>
             </Section>
 

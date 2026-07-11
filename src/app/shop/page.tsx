@@ -191,6 +191,13 @@ function ShopPage() {
     safePage * PRODUCTS_PER_PAGE
   );
 
+  const filtersJson = JSON.stringify(filters);
+  if (prevFilters !== filtersJson) {
+    setPrevFilters(filtersJson);
+    if (currentPage !== 1) setCurrentPage(1);
+  }
+  if (currentPage !== safePage) setCurrentPage(safePage);
+
   const updateURL = useCallback(
     (f: FilterState, s: string, p: number) => {
       const params = new URLSearchParams();
@@ -215,16 +222,6 @@ function ShopPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [filters, sort, safePage, updateURL]);
-
-  useEffect(() => {
-    const filtersChanged = JSON.stringify(filters) !== prevFilters;
-    if (filtersChanged) setCurrentPage(1);
-    setPrevFilters(JSON.stringify(filters));
-  }, [filters, prevFilters]);
-
-  useEffect(() => {
-    if (safePage !== currentPage) setCurrentPage(safePage);
-  }, [safePage, currentPage]);
 
   const handleFilterChange = useCallback((newFilters: FilterState) => {
     setFilters(newFilters);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, ArrowRight } from "lucide-react";
@@ -11,34 +11,30 @@ import { formatPrice } from "@/lib/utils";
 export function SearchDrawer() {
   const { isSearchOpen, closeSearch } = useUI();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<typeof products>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isSearchOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
-    } else {
-      setQuery("");
-      setResults([]);
     }
   }, [isSearchOpen]);
 
-  useEffect(() => {
-    if (query.length > 1) {
-      const q = query.toLowerCase();
-      setResults(
-        products.filter(
-          (p) =>
-            p.name.toLowerCase().includes(q) ||
-            p.description.toLowerCase().includes(q) ||
-            p.category.name.toLowerCase().includes(q) ||
-            p.brand.name.toLowerCase().includes(q) ||
-            p.tags.some((t) => t.toLowerCase().includes(q))
-        )
-      );
-    } else {
-      setResults([]);
-    }
+  const handleClose = useCallback(() => {
+    setQuery("");
+    closeSearch();
+  }, [closeSearch]);
+
+  const results = useMemo(() => {
+    if (query.length <= 1) return [];
+    const q = query.toLowerCase();
+    return products.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.category.name.toLowerCase().includes(q) ||
+        p.brand.name.toLowerCase().includes(q) ||
+        p.tags.some((t) => t.toLowerCase().includes(q))
+    );
   }, [query]);
 
   return (
@@ -50,7 +46,7 @@ export function SearchDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 z-50"
-            onClick={closeSearch}
+            onClick={handleClose}
           />
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -68,10 +64,12 @@ export function SearchDrawer() {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search luxury fashion..."
                   className="flex-1 text-lg bg-transparent border-none outline-none placeholder:text-medium-gray"
+                  aria-label="Search products"
                 />
                 <button
-                  onClick={closeSearch}
+                  onClick={handleClose}
                   className="p-2 hover:bg-lighter-gray rounded-full transition-colors"
+                  aria-label="Close search"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -86,7 +84,7 @@ export function SearchDrawer() {
                       <Link
                         key={product.id}
                         href={`/product/${product.slug}`}
-                        onClick={closeSearch}
+                        onClick={handleClose}
                         className="flex items-center gap-3 p-2 hover:bg-lighter-gray rounded-lg transition-colors group"
                       >
                         <div
@@ -110,7 +108,7 @@ export function SearchDrawer() {
                   {results.length > 6 && (
                     <Link
                       href={`/shop?q=${encodeURIComponent(query)}`}
-                      onClick={closeSearch}
+                      onClick={handleClose}
                       className="flex items-center justify-center gap-2 mt-3 py-2.5 text-sm font-medium text-gold hover:bg-gold/5 rounded-lg transition-colors"
                     >
                       View all results

@@ -74,7 +74,7 @@ export function BeautyEdit() {
           >
             <Link
               href="/shop?category=premium-beauty"
-              className="inline-flex items-center gap-2 text-xs font-medium text-dark/50 hover:text-gold transition-colors"
+              className="inline-flex items-center gap-2 text-xs font-medium text-dark/50 hover:text-gold transition-colors group"
             >
               <span>Shop All Beauty</span>
               <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" />

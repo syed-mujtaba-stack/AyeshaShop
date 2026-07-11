@@ -2,16 +2,19 @@
 
 import { useRef, useEffect, useCallback, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform, useAnimationFrame } from "framer-motion";
 import { ArrowRight, Heart, Eye } from "lucide-react";
 import { getFeaturedProducts } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
+import { useWishlist } from "@/hooks/use-wishlist";
 import type { PanInfo } from "framer-motion";
 
 function useMediaWidth() {
-  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
+  const [width, setWidth] = useState(1280);
   useEffect(() => {
     const onResize = () => setWidth(window.innerWidth);
+    onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -22,6 +25,8 @@ export function TrendingProducts() {
   const products = getFeaturedProducts().slice(0, 6);
   const viewportRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
+  const { isInWishlist, toggleItem } = useWishlist();
+  const router = useRouter();
 
   const scrollX = useMotionValue(0);
   const x = useTransform(scrollX, (v) => v);
@@ -160,12 +165,20 @@ export function TrendingProducts() {
                   )}
 
                   <div className="absolute top-3 right-3 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                    <span className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
-                      <Heart className="h-3.5 w-3.5 text-dark" />
-                    </span>
-                    <span className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
+                    <button
+                      className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                      aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+                      onClick={(e) => { e.preventDefault(); toggleItem(product); }}
+                    >
+                      <Heart className={`h-3.5 w-3.5 ${isInWishlist(product.id) ? "text-gold fill-gold" : "text-dark"}`} />
+                    </button>
+                    <button
+                      className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                      aria-label="Quick view"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/product/${product.slug}`); }}
+                    >
                       <Eye className="h-3.5 w-3.5 text-dark" />
-                    </span>
+                    </button>
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">

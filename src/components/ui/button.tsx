@@ -45,8 +45,8 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, loading, children, disabled, ...props }, ref) => {
     return (
-      <div className="inline-block">
         <motion.button
+          type="button"
           whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
           whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
           className={cn(buttonVariants({ variant, size, className }))}
@@ -68,7 +68,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           )}
           {children}
         </motion.button>
-      </div>
     );
   }
 );
