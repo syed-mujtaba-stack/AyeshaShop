@@ -53,13 +53,13 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input label="Store Name" defaultValue="AYESHA FASHION STYLE" />
-              <Input label="Store Email" defaultValue="hello@ayesha-fashion.com" />
+              <Input label="Store Email" defaultValue="ayeshabeautysaloon26@gmail.com" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input label="Phone" defaultValue="+92 300 1234567" />
+              <Input label="Phone" defaultValue="+92 337 6031141" />
               <Input label="Currency" defaultValue="PKR" />
             </div>
-            <Input label="Address" defaultValue="12-B, Luxury Heights, Main Boulevard, Lahore, Punjab, Pakistan" />
+            <Input label="Address" defaultValue="Dak Khana Ghulam, Chak 58 J.B, Tehsil Faisalabad Saddar, Faisalabad" />
             <div>
               <label className="block text-sm font-medium text-dark mb-1.5">Default Language</label>
               <Select

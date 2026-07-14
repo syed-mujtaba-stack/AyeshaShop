@@ -72,11 +72,13 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
-            <Link
-              href="/"
-              className="font-heading text-2xl tracking-[0.2em] text-white hover:text-gold transition-colors inline-block mb-4"
-            >
-              {SITE_NAME}
+            <Link href="/" className="inline-block mb-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt={SITE_NAME}
+                style={{ height: "80px", width: "auto" }}
+              />
             </Link>
             <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
               {SITE_FULL_NAME} brings you the finest in luxury fashion. 
@@ -86,15 +88,15 @@ export function Footer() {
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-white/50 text-sm">
                 <MapPin className="h-4 w-4 shrink-0" />
-                <span>Lahore, Pakistan</span>
+                <span>Dak Khana Ghulam, Chak 58 J.B, Tehsil Faisalabad Saddar, Faisalabad</span>
               </div>
               <div className="flex items-center gap-2 text-white/50 text-sm">
                 <Phone className="h-4 w-4 shrink-0" />
-                <span>+92 300 1234567</span>
+                <span>+92 337 6031141</span>
               </div>
               <div className="flex items-center gap-2 text-white/50 text-sm">
                 <Mail className="h-4 w-4 shrink-0" />
-                <span>hello@ayesha-fashion.com</span>
+                <span>ayeshabeautysaloon26@gmail.com</span>
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">

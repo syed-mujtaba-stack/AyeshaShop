@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -57,7 +58,7 @@ const megaMenuData = {
       },
     ],
     promo: {
-      src: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=480&q=80",
+      src: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=480&q=80",
       alt: "Spring 2026 Collection",
       tagline: "Spring / Summer 2026",
       title: "The New\nSilhouette",
@@ -147,7 +148,7 @@ export function Navbar() {
         )}
       >
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center justify-between h-[72px] md:h-20 lg:h-24">
             <button
               onClick={toggleMobileMenu}
               className="lg:hidden p-2 -ml-2"
@@ -156,11 +157,13 @@ export function Navbar() {
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
 
-            <Link
-              href="/"
-              className="font-heading text-2xl lg:text-3xl font-bold tracking-[0.2em] text-dark hover:text-gold transition-colors duration-300"
-            >
-              {SITE_NAME}
+            <Link href="/" className="flex items-center shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt={SITE_NAME}
+                className="h-10 md:h-12 lg:h-[60px] w-auto"
+              />
             </Link>
 
             <nav className="hidden lg:flex items-center gap-1">
@@ -189,75 +192,78 @@ export function Navbar() {
                     {label}
                     <ChevronDown className={cn("h-3 w-3 transition-transform duration-300", activeMega === label && "rotate-180")} />
                   </button>
-                  <AnimatePresence>
-                    {activeMega === label && megaMenuData[label as keyof typeof megaMenuData] && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[780px] bg-white rounded-sm shadow-[0_20px_60px_-12px_rgba(0,0,0,0.12)] border border-border/50 overflow-hidden"
-                      >
-                        <div className="flex">
-                          <div className="flex-1 py-8 px-8">
-                            <div className="flex gap-8">
-                              {megaMenuData[label as keyof typeof megaMenuData].columns.map((col, colIdx) => (
-                                <div key={col.title} className={cn(colIdx > 0 && "pl-8 border-l border-border/40")}>
-                                  <h4 className="text-[11px] font-semibold text-medium-gray uppercase tracking-[0.15em] mb-4">
-                                    {col.title}
-                                  </h4>
-                                  <ul className="space-y-2.5">
-                                    {col.links.map((link) => (
-                                      <li key={link.label}>
-                                        <Link
-                                          href={link.href}
-                                          className="group/link relative text-[13px] text-dark/60 hover:text-dark transition-colors duration-200 inline-block"
-                                          onClick={() => setActiveMega(null)}
-                                        >
-                                          {link.label}
-                                          <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gold transition-all duration-300 group-hover/link:w-full" />
-                                        </Link>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="w-[240px] flex-shrink-0 relative overflow-hidden">
-                            <div
-                              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
-                              style={{ backgroundImage: `url(${megaMenuData[label as keyof typeof megaMenuData].promo.src})` }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                            <div className="absolute inset-0 flex flex-col justify-end p-6">
-                              <p className="text-[10px] font-medium text-white/70 uppercase tracking-[0.2em] mb-1.5">
-                                {megaMenuData[label as keyof typeof megaMenuData].promo.tagline}
-                              </p>
-                              <h3 className="font-heading text-xl font-bold text-white leading-tight whitespace-pre-line mb-3">
-                                {megaMenuData[label as keyof typeof megaMenuData].promo.title}
-                              </h3>
-                              <Link
-                                href={megaMenuData[label as keyof typeof megaMenuData].promo.href}
-                                onClick={() => setActiveMega(null)}
-                                className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white uppercase tracking-[0.15em] group/link"
-                              >
-                                <span className="border-b border-white/50 group-hover/link:border-white transition-colors duration-300">
-                                  Shop Now
-                                </span>
-                                <svg className="w-3 h-3 transition-transform duration-300 group-hover/link:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               ))}
             </nav>
+
+            <AnimatePresence>
+              {activeMega && megaMenuData[activeMega] && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[780px] bg-white rounded-sm shadow-[0_20px_60px_-12px_rgba(0,0,0,0.12)] border border-border/50 overflow-hidden z-50"
+                  onMouseEnter={() => setActiveMega(activeMega)}
+                  onMouseLeave={() => setActiveMega(null)}
+                >
+                  <div className="flex">
+                    <div className="flex-1 py-8 px-8">
+                      <div className="flex gap-8">
+                        {megaMenuData[activeMega].columns.map((col, colIdx) => (
+                          <div key={col.title} className={cn(colIdx > 0 && "pl-8 border-l border-border/40")}>
+                            <h4 className="text-[11px] font-semibold text-medium-gray uppercase tracking-[0.15em] mb-4">
+                              {col.title}
+                            </h4>
+                            <ul className="space-y-2.5">
+                              {col.links.map((link) => (
+                                <li key={link.label}>
+                                  <Link
+                                    href={link.href}
+                                    className="group/link relative text-[13px] text-dark/60 hover:text-dark transition-colors duration-200 inline-block"
+                                    onClick={() => setActiveMega(null)}
+                                  >
+                                    {link.label}
+                                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gold transition-all duration-300 group-hover/link:w-full" />
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="w-[240px] flex-shrink-0 relative overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
+                        style={{ backgroundImage: `url(${megaMenuData[activeMega].promo.src})` }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 flex flex-col justify-end p-6">
+                        <p className="text-[10px] font-medium text-white/70 uppercase tracking-[0.2em] mb-1.5">
+                          {megaMenuData[activeMega].promo.tagline}
+                        </p>
+                        <h3 className="font-heading text-xl font-bold text-white leading-tight whitespace-pre-line mb-3">
+                          {megaMenuData[activeMega].promo.title}
+                        </h3>
+                        <Link
+                          href={megaMenuData[activeMega].promo.href}
+                          onClick={() => setActiveMega(null)}
+                          className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white uppercase tracking-[0.15em] group/link"
+                        >
+                          <span className="border-b border-white/50 group-hover/link:border-white transition-colors duration-300">
+                            Shop Now
+                          </span>
+                          <svg className="w-3 h-3 transition-transform duration-300 group-hover/link:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div className="flex items-center gap-1 sm:gap-2">
               <button

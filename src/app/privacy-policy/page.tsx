@@ -103,8 +103,8 @@ export default function PrivacyPolicyPage() {
               </p>
               <p className="text-dark">
                 {SITE_NAME}<br />
-                42 Gulberg Main Boulevard<br />
-                Lahore, Pakistan 54000
+                Dak Khana Ghulam, Chak Number 58 J.B<br />
+                Tehsil Faisalabad Saddar, Zila Faisalabad
               </p>
             </Section>
 

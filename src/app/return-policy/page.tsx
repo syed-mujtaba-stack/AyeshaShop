@@ -109,7 +109,7 @@ export default function ReturnPolicyPage() {
             <div className="pt-6 border-t border-border">
               <p className="text-xs text-medium-gray">
                 This policy was last updated on June 1, 2026. For any return-related inquiries, please
-                contact us at returns@ayesha-fashion.com or call +92 300 1234567.
+                contact us at ayeshabeautysaloon26@gmail.com or call +92 337 6031141.
               </p>
             </div>
           </div>

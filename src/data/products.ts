@@ -303,7 +303,7 @@ export const products: Product[] = [
     shortDescription: "Cascading crystal drop earrings in rhodium-plated sterling silver.",
     price: 78000,
     images: [
-      "https://images.unsplash.com/photo-1535632066927-ab7c8ab60908?w=800&q=80",
+      "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800&q=80",
       "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80",
     ],
     category: { id: "cat-3", name: "Fine Jewelry", slug: "fine-jewelry", image: "" },

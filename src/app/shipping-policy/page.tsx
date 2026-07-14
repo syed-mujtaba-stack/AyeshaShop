@@ -99,7 +99,7 @@ export default function ShippingPolicyPage() {
             <div className="pt-6 border-t border-border">
               <p className="text-xs text-medium-gray">
                 This policy was last updated on June 1, 2026. For any shipping-related inquiries,
-                please contact us at shipping@ayesha-fashion.com.
+                please contact us at ayeshabeautysaloon26@gmail.com.
               </p>
             </div>
           </div>

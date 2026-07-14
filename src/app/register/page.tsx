@@ -164,7 +164,7 @@ export default function RegisterPage() {
                 <Input
                   label="Phone Number"
                   type="tel"
-                  placeholder="+92 300 1234567"
+                  placeholder="+92 337 6031141"
                   icon={<Phone className="h-4 w-4" />}
                   value={form.phone}
                   onChange={(e) => handleChange("phone", e.target.value)}

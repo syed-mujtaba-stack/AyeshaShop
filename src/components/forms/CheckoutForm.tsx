@@ -218,7 +218,7 @@ export function CheckoutForm() {
                 />
                 <Input
                   label="Phone Number"
-                  placeholder="+92 300 1234567"
+                  placeholder="+92 337 6031141"
                   value={form.billingPhone}
                   onChange={(e) => update("billingPhone", e.target.value)}
                 />
@@ -291,7 +291,7 @@ export function CheckoutForm() {
                     />
                     <Input
                       label="Phone Number"
-                      placeholder="+92 300 1234567"
+                      placeholder="+92 337 6031141"
                       value={form.shippingPhone}
                       onChange={(e) => update("shippingPhone", e.target.value)}
                     />

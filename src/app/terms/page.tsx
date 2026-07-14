@@ -103,9 +103,9 @@ export default function TermsPage() {
               </p>
               <p className="text-dark">
                 {SITE_NAME}<br />
-                Email: legal@ayesha-fashion.com<br />
-                Phone: +92 300 1234567<br />
-                Address: 42 Gulberg Main Boulevard, Lahore, Pakistan
+                Email: ayeshabeautysaloon26@gmail.com<br />
+                Phone: +92 337 6031141<br />
+                Address: Dak Khana Ghulam, Chak 58 J.B, Tehsil Faisalabad Saddar, Faisalabad
               </p>
             </Section>
 

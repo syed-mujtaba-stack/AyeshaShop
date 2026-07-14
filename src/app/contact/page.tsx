@@ -13,17 +13,15 @@ const contactDetails = [
     icon: MapPin,
     title: "Visit Our Store",
     details: [
-      "42 Gulberg Main Boulevard",
-      "Lahore, Pakistan 54000",
-      "Google Maps",
+      "Dak Khana Ghulam, Chak Number 58 J.B",
+      "Tehsil Faisalabad Saddar, Zila Faisalabad",
     ],
   },
   {
     icon: Phone,
     title: "Call Us",
     details: [
-      "+92 300 1234567",
-      "+92 42 35781234",
+      "+92 337 6031141",
       "Mon–Sat, 10 AM – 8 PM",
     ],
   },
@@ -31,8 +29,7 @@ const contactDetails = [
     icon: Mail,
     title: "Email Us",
     details: [
-      "hello@ayesha-fashion.com",
-      "support@ayesha-fashion.com",
+      "ayeshabeautysaloon26@gmail.com",
       "We respond within 24 hours",
     ],
   },

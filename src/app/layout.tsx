@@ -53,7 +53,7 @@ export default function RootLayout({
         <link rel="preload" as="image" href="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1440&q=80" />
         <link rel="preconnect" href="https://images.unsplash.com" />
       </head>
-      <body className="min-h-screen bg-off-white antialiased">
+      <body className="min-h-screen bg-off-white antialiased" suppressHydrationWarning>
         <Script id="sw-register" strategy="afterInteractive">
           {`if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js")})}`}
         </Script>
