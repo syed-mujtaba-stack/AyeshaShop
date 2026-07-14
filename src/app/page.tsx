@@ -8,6 +8,7 @@ import { BeautyEdit } from "@/components/home/BeautyEdit";
 import { Bestsellers } from "@/components/home/Bestsellers";
 import { BrandSlider } from "@/components/home/BrandSlider";
 import { TestimonialsSection } from "@/components/home/Testimonials";
+import { SatisfiedCustomers } from "@/components/home/SatisfiedCustomers";
 import { InstagramGallery } from "@/components/home/InstagramGallery";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 
@@ -24,6 +25,7 @@ export default function HomePage() {
       <Bestsellers />
       <BrandSlider />
       <TestimonialsSection />
+      <SatisfiedCustomers />
       <InstagramGallery />
       <NewsletterSection />
     </>

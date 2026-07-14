@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Globe, Camera, MessageCircle, Video, Heart, Mail, MapPin, Phone } from "lucide-react";
+import { Globe, Camera, MessageCircle, Video, Heart, Mail, MapPin, Phone, Clock } from "lucide-react";
 import { SITE_NAME, SITE_FULL_NAME } from "@/constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 const footerLinks = {
   Shop: [
@@ -106,15 +107,34 @@ export function Footer() {
                 { icon: Globe, label: "Twitter", href: "#" },
                 { icon: Video, label: "Youtube", href: "#" },
               ].map(({ icon: Icon, label, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold transition-colors"
-                  aria-label={label}
-                >
-                  <Icon className="h-4 w-4" />
-                </Link>
+                <motion.div key={label} whileHover={{ y: -3, scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href={href}
+                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold hover:shadow-[0_0_15px_rgba(184,134,11,0.4)] transition-all duration-300 group"
+                    aria-label={label}
+                  >
+                    <Icon className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
+                  </Link>
+                </motion.div>
               ))}
+            </div>
+
+            {/* Working Hours */}
+            <div className="mt-6 bg-white/5 border border-white/10 rounded-xl p-4 max-w-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Clock className="h-4 w-4 text-gold" />
+                <h4 className="text-xs font-semibold text-white/80 uppercase tracking-wider">Working Hours</h4>
+              </div>
+              <div className="space-y-1.5 text-sm">
+                <div className="flex justify-between text-white/50">
+                  <span>Mon - Sat</span>
+                  <span className="text-gold-light">10:00 AM – 9:00 PM</span>
+                </div>
+                <div className="flex justify-between text-white/50">
+                  <span>Sunday</span>
+                  <span className="text-gold-light">12:00 PM – 6:00 PM</span>
+                </div>
+              </div>
             </div>
           </div>
 

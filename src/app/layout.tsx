@@ -8,6 +8,8 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { PageTransition } from "@/components/common/PageTransition";
 import { PWAInstall } from "@/components/common/PWAInstall";
+import { RouteLoader } from "@/components/common/RouteLoader";
+import { QuickActions } from "@/components/common/QuickActions";
 import { SITE_NAME, SITE_DESCRIPTION } from "@/constants";
 import "./globals.css";
 
@@ -58,6 +60,7 @@ export default function RootLayout({
           {`if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js")})}`}
         </Script>
         <Providers>
+          <RouteLoader />
           <LoaderWrapper>
             {/* Sticky header container: announcement bar + navbar */}
             <div className="sticky top-0 z-50">
@@ -69,6 +72,7 @@ export default function RootLayout({
             </PageTransition>
             <Footer />
             <MobileBottomNav />
+            <QuickActions />
             <PWAInstall />
           </LoaderWrapper>
         </Providers>

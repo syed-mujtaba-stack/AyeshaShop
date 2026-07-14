@@ -33,6 +33,7 @@ export function TrendingProducts() {
 
   const speed = 35;
   const isDragging = useRef(false);
+  const isHovered = useRef(false);
   const lastPointerX = useRef(0);
   const lastPointerTime = useRef(0);
   const velocity = useRef(0);
@@ -44,7 +45,7 @@ export function TrendingProducts() {
 
   const animate = useCallback(
     (time: number, delta: number) => {
-      if (isDragging.current || !marqueeRef.current) return;
+      if (isDragging.current || isHovered.current || !marqueeRef.current) return;
       const dt = delta / 1000;
       let offset = scrollX.get() - speed * dt;
       if (Math.abs(offset) >= singleSetW) offset += singleSetW;
@@ -124,6 +125,8 @@ export function TrendingProducts() {
       <div
         ref={viewportRef}
         className="relative cursor-grab active:cursor-grabbing select-none"
+        onMouseEnter={() => { isHovered.current = true; }}
+        onMouseLeave={() => { isHovered.current = false; }}
       >
         <motion.div
           ref={marqueeRef}
