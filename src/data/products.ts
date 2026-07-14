@@ -7,8 +7,8 @@ export const products: Product[] = [
     slug: "midnight-rose-evening-gown",
     description: "An exquisite floor-length evening gown crafted from the finest Italian silk. Features intricate hand-embroidered rose motifs with Swarovski crystal detailing. The silhouette flows elegantly with a dramatic train, perfect for gala events and red carpet occasions. Each piece is meticulously hand-finished by master artisans.",
     shortDescription: "Exquisite Italian silk evening gown with hand-embroidered rose motifs and Swarovski crystals.",
-    price: 189000,
-    comparePrice: 245000,
+    price: 28500,
+    comparePrice: 35000,
     discount: 23,
     images: [
       "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&q=80",
@@ -49,7 +49,7 @@ export const products: Product[] = [
     slug: "diamond-symphony-cocktail-dress",
     description: "A stunning cocktail dress that captures the essence of modern luxury. Adorned with thousands of micro-sequins that catch the light like diamonds, featuring a flattering A-line silhouette with a subtle sweetheart neckline. The dress is lined with the softest charmeuse for ultimate comfort.",
     shortDescription: "Stunning micro-sequin cocktail dress with diamond-like brilliance and A-line silhouette.",
-    price: 145000,
+    price: 22000,
     images: [
       "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80",
       "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80",
@@ -88,7 +88,7 @@ export const products: Product[] = [
     slug: "celestial-wonder-handbag",
     description: "A masterpiece of leather craftsmanship inspired by the night sky. Each bag features hand-stitched celestial patterns in gold thread, with a removable chain strap and magnetic closure. The interior is luxuriously lined with suede and includes multiple compartments.",
     shortDescription: "Hand-stitched celestial leather handbag with gold thread detailing and suede lining.",
-    price: 245000,
+    price: 45000,
     images: [
       "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80",
       "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=800&q=80",
@@ -125,7 +125,7 @@ export const products: Product[] = [
     slug: "imperial-pearl-necklace",
     description: "A breathtaking necklace featuring 45 perfectly matched South Sea pearls, each measuring 12-15mm. The pearls are strung on silk thread with a handcrafted 18k gold clasp set with a 2-carat diamond. Each pearl exhibits exceptional luster.",
     shortDescription: "45 South Sea pearls with 18k gold diamond clasp. Exceptional luster and quality.",
-    price: 520000,
+    price: 250000,
     images: [
       "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80",
       "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80",
@@ -154,8 +154,8 @@ export const products: Product[] = [
     slug: "velvet-noir-blazer",
     description: "A sophisticated velvet blazer that exudes timeless elegance. Crafted from the finest Italian velvet with silk lapels, featuring a single-breasted closure with gold-toned buttons. Perfect for both formal occasions and elevated evening wear.",
     shortDescription: "Italian velvet blazer with silk lapels and gold-toned buttons. Timeless sophistication.",
-    price: 98000,
-    comparePrice: 120000,
+    price: 14500,
+    comparePrice: 18000,
     discount: 18,
     images: [
       "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80",
@@ -194,7 +194,7 @@ export const products: Product[] = [
     slug: "enchanted-garden-maxi-dress",
     description: "A romantic maxi dress featuring a hand-painted floral pattern on the finest silk chiffon. The dress flows gracefully with a tiered skirt and features delicate lace insets at the bodice. An ethereal piece for garden parties and summer weddings.",
     shortDescription: "Hand-painted floral silk chiffon maxi dress with lace bodice insets.",
-    price: 125000,
+    price: 18000,
     images: [
       "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80",
       "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&q=80",
@@ -232,7 +232,7 @@ export const products: Product[] = [
     slug: "signature-tote-bag",
     description: "An iconic tote bag that defines modern luxury. Made from premium pebbled leather with gold hardware, featuring the signature monogram pattern. Spacious enough for daily essentials with an interior zip pocket and card slots.",
     shortDescription: "Premium pebbled leather tote with gold hardware and signature monogram pattern.",
-    price: 185000,
+    price: 35000,
     images: [
       "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80",
       "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80",
@@ -269,7 +269,7 @@ export const products: Product[] = [
     slug: "rose-eclat-eau-de-parfum",
     description: "A captivating fragrance that captures the essence of a blooming rose garden at dawn. Top notes of bergamot and pink pepper give way to a heart of Damask rose and jasmine, resting on a base of musk and sandalwood. Created by master perfumers in Grasse, France.",
     shortDescription: "Captivating rose fragrance with notes of bergamot, jasmine, and sandalwood.",
-    price: 45000,
+    price: 5500,
     images: [
       "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80",
       "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=800&q=80",
@@ -301,7 +301,7 @@ export const products: Product[] = [
     slug: "crystal-cascade-earrings",
     description: "Dazzling drop earrings featuring a cascade of precision-cut crystals set in rhodium-plated sterling silver. The earrings catch the light from every angle, creating a spectacular display of brilliance. Each crystal is hand-set by master jewelers.",
     shortDescription: "Cascading crystal drop earrings in rhodium-plated sterling silver.",
-    price: 78000,
+    price: 12000,
     images: [
       "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800&q=80",
       "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80",
@@ -329,8 +329,8 @@ export const products: Product[] = [
     slug: "stiletto-noir-pumps",
     description: "The ultimate statement pump in luxurious patent leather. Featuring a sculptural stiletto heel with gold-tipped detailing and a pointed toe. The leather-lined interior ensures comfort for all-day wear. Designed for the woman who commands attention.",
     shortDescription: "Sculptural patent leather stiletto pumps with gold-tipped heel detail.",
-    price: 65000,
-    comparePrice: 82000,
+    price: 9800,
+    comparePrice: 14000,
     discount: 21,
     images: [
       "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80",
@@ -371,7 +371,7 @@ export const products: Product[] = [
     slug: "radiance-serum-foundation",
     description: "A revolutionary serum foundation that combines skincare with coverage. Infused with hyaluronic acid, vitamin C, and SPF 50, it provides a luminous, second-skin finish while protecting and nourishing the skin. Available in 30 shades.",
     shortDescription: "Skincare-infused foundation with hyaluronic acid, vitamin C, and SPF 50.",
-    price: 12000,
+    price: 2800,
     images: [
       "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80",
       "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
@@ -404,7 +404,7 @@ export const products: Product[] = [
     slug: "cashmere-cloud-wrap",
     description: "An impossibly soft cashmere wrap that feels like a gentle cloud. Made from Grade A Mongolian cashmere with a brushed finish for extra softness. The generous size allows for multiple styling options - wear as a scarf, shawl, or wrap.",
     shortDescription: "Grade A Mongolian cashmere wrap with brushed finish. Ultra-soft and versatile.",
-    price: 85000,
+    price: 8500,
     images: [
       "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=80",
       "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80",

@@ -37,12 +37,11 @@ export const SORT_OPTIONS = [
 ];
 
 export const PRICE_RANGES = [
-  { label: "Under PKR 1,000", min: 0, max: 1000 },
-  { label: "PKR 1,000 - PKR 5,000", min: 1000, max: 5000 },
-  { label: "PKR 5,000 - PKR 25,000", min: 5000, max: 25000 },
-  { label: "PKR 25,000 - PKR 100,000", min: 25000, max: 100000 },
-  { label: "PKR 100,000 - PKR 200,000", min: 100000, max: 200000 },
-  { label: "Above PKR 200,000", min: 200000, max: Infinity },
+  { label: "Under PKR 5,000", min: 0, max: 5000 },
+  { label: "PKR 5,000 - PKR 15,000", min: 5000, max: 15000 },
+  { label: "PKR 15,000 - PKR 50,000", min: 15000, max: 50000 },
+  { label: "PKR 50,000 - PKR 1,00,000", min: 50000, max: 100000 },
+  { label: "PKR 1,00,000 - PKR 3,00,000", min: 100000, max: 300000 },
 ];
 
 export const SHIPPING_COST = 499;

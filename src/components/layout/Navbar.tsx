@@ -162,7 +162,8 @@ export function Navbar() {
               <img
                 src="/logo.png"
                 alt={SITE_NAME}
-                className="h-10 md:h-12 lg:h-[60px] w-auto"
+                className="h-[50px] md:h-[60px] lg:h-[75px] w-auto"
+                style={{ imageRendering: "auto", WebkitFontSmoothing: "antialiased" }}
               />
             </Link>
 
@@ -197,7 +198,7 @@ export function Navbar() {
             </nav>
 
             <AnimatePresence>
-              {activeMega && megaMenuData[activeMega] && (
+              {activeMega && megaMenuData[activeMega as keyof typeof megaMenuData] && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -210,7 +211,7 @@ export function Navbar() {
                   <div className="flex">
                     <div className="flex-1 py-8 px-8">
                       <div className="flex gap-8">
-                        {megaMenuData[activeMega].columns.map((col, colIdx) => (
+                        {megaMenuData[activeMega as keyof typeof megaMenuData].columns.map((col, colIdx) => (
                           <div key={col.title} className={cn(colIdx > 0 && "pl-8 border-l border-border/40")}>
                             <h4 className="text-[11px] font-semibold text-medium-gray uppercase tracking-[0.15em] mb-4">
                               {col.title}
@@ -236,18 +237,18 @@ export function Navbar() {
                     <div className="w-[240px] flex-shrink-0 relative overflow-hidden">
                       <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
-                        style={{ backgroundImage: `url(${megaMenuData[activeMega].promo.src})` }}
+                        style={{ backgroundImage: `url(${megaMenuData[activeMega as keyof typeof megaMenuData].promo.src})` }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
                         <p className="text-[10px] font-medium text-white/70 uppercase tracking-[0.2em] mb-1.5">
-                          {megaMenuData[activeMega].promo.tagline}
+                          {megaMenuData[activeMega as keyof typeof megaMenuData].promo.tagline}
                         </p>
                         <h3 className="font-heading text-xl font-bold text-white leading-tight whitespace-pre-line mb-3">
-                          {megaMenuData[activeMega].promo.title}
+                          {megaMenuData[activeMega as keyof typeof megaMenuData].promo.title}
                         </h3>
                         <Link
-                          href={megaMenuData[activeMega].promo.href}
+                          href={megaMenuData[activeMega as keyof typeof megaMenuData].promo.href}
                           onClick={() => setActiveMega(null)}
                           className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white uppercase tracking-[0.15em] group/link"
                         >

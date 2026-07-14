@@ -77,7 +77,7 @@ export function Footer() {
               <img
                 src="/logo.png"
                 alt={SITE_NAME}
-                style={{ height: "80px", width: "auto" }}
+                style={{ height: "100px", width: "auto", imageRendering: "auto" }}
               />
             </Link>
             <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
